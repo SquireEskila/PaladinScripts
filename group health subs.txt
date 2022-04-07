@@ -1,0 +1,14 @@
+## good for group list, but not needed for the group engagement script
+
+#subs {^\s\s(\w+|\w+\s\(Leader\))\: Invigorated} {  $1: 100+} {group}
+#subs {^\s\s(\w+|\w+\s\(Leader\))\: Healthy} {  $1: 100%} {group}
+#subs {^\s\s(\w+|\w+\s\(Leader\))\: Bruised} {  $1: 99-90%} {group}
+#subs {^\s\s(\w+|\w+\s\(Leader\))\: Hurt} {  $1: 89-80%} {group}
+#subs {^\s\s(\w+|\w+\s\(Leader\))\: Battered} {  $1: 79-70%} {group}
+#subs {^\s\s(\w+|\w+\s\(Leader\))\: Beat up} {  $1: 69-60%} {group}
+#subs {^\s\s(\w+|\w+\s\(Leader\))\: Very beat up} {  $1: 59-50%} {group}
+#subs {^\s\s(\w+|\w+\s\(Leader\))\: Badly hurt} {  $1: 49-40%} {group}
+#subs {^\s\s(\w+|\w+\s\(Leader\))\: Very badly hurt} {  $1: 39-30%} {group}
+#subs {^\s\s(\w+|\w+\s\(Leader\))\: Smashed up} {  $1: 29-20%} {group}
+#subs {^\s\s(\w+|\w+\s\(Leader\))\: Terribly wounded} {  $1: 19-10%} {group}
+#subs {^\s\s(\w+|\w+\s\(Leader\))\: Near death} {  $1: 9-1%} {group}
