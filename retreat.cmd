@@ -24,10 +24,11 @@ var help 0
 var left 0
 var direction 0
 var dying %dying_limit
+if matchre ("%0","leader") then goto retreat
 if_1 then var quick %0
 if_1 then var direction %0
 
-#need to do this to capture leader's name quickly
+#need to do this to capture leader's name quickly, if leader is not set by starting the script with ".retreat leader [leader's name]"
 group_list:
 pause 0.01
 put group list

@@ -133,10 +133,10 @@ action var name You;if ("%%name_engage" != "*Melee*") then var update 1;var %nam
 # war stomp?
 # crusader's challenge?
 
-
 # group adding - auto updates group list
 action (group) var name $2;var %name_engage ???;var %name_lost;if matchre ("%group","%name") then goto wait;math total add 1;var group %group|%name when ^(%group) holds? (\w+)\'s hand lightly\.
-action (group) var name $2;var %name_engage ???;var %name_lost;if matchre ("%group","%name") then goto wait;math total add 1;var group %group|%name when ^(%group) (reach|reaches) over and hold (\w+)\'s hand\.
+action (group) var name $3;var %name_engage ???;var %name_lost;if matchre ("%group","%name") then goto wait;math total add 1;var group %group|%name when ^(%group) (reach|reaches) over and holds? (\w+)\'s hand\.
+action (group) var name $2;var %name_engage ???;var %name_lost;if matchre ("%group","%name") then goto wait;math total add 1;var group %group|%name when ^(%group) reaches over and holds hands with (\w+).
 action (group) var name $2;var %name_engage ???;var %name_lost;if matchre ("%group","%name") then goto wait;math total add 1;var group %group|%name when ^(%group) holds? (\w+)\'s hand, giving
 action (group) var name $2;var %name_engage ???;var %name_lost;if matchre ("%group","%name") then goto wait;math total add 1;var group %group|%name when ^(%group) clasps? (\w+)\'s hand tenderly\.
 action (group) var name $2;var %name_engage ???;var %name_lost;if matchre ("%group","%name") then goto wait;math total add 1;var group %group|%name when ^(%group) roughly grabs? (\w+)\'s hand\.
@@ -152,8 +152,8 @@ action var name $1;math total subtract 1;eval group replacere("%group","%name\||
 action goto group_lost when ^%leader leaves you behind|^%leader (%movelist) (%directions)|^Your group moves on without you
 action goto group_wait when ^(\w+) stops you from following|^(\w+) forces you out of (his|her) group
 action action (group_disband) off;goto list_group_lost when ^Defaulting to GROUP disband
-action goto list_group_lost when ^There is 1 member
-action goto end when ^You leave the group\.
+action action (group_disband) off;goto end when ^You leave the group\.
+action (group_disband) goto list_group_lost when ^There is 1 member
 
 # this one is driving me crazy, why does it only work if the person is in the group when the script is started?
 # also fires off if you go inside a house then then ^(%name) (walks) (in) the door
@@ -163,6 +163,7 @@ action var name $1;if ("%name" = "%leader") then goto group_lost;var place $3;ma
 action var leader You;var update 1 when ^(\w+) designates you as the new leader of the group\.
 action var leader $1;var update 1 when ^You designate (\w+) as the new leader of the group\.
 action var leader $2;var update 1 when ^(\w+) designates (?!you)(\w+) as the new leader of the group\.
+action goto restart when ^You join (\w+)\'s group\.
 
 # health subs, position, and further group checking
 action var checklist $1|%checklist when ^\s\s(\w+).*\:
@@ -328,7 +329,8 @@ matchre start ^You join (\w+)'s group|^You are already following
 matchwait
 
 group_wait:
-put #clear grouplist
+#put #clear grouplist
+put #echo
 put #echo >%window You were disbanded from the group.
 put #echo >%window Find %leader to join again when they're ready!
 waitforre ^You join (\w+)'s group|^You are already following

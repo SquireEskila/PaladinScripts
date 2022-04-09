@@ -35,9 +35,28 @@ var caps ONE|TWO|THREE|FOUR|FIVE|SIX|SEVEN|EIGHT|NINE|TEN|ELEVEN|TWELVE|THIRTEEN
 var letters one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty
 var numbers 1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20
 
-action (start) var sayer $1;var countdown $3;goto timer_start when ^(\w+).*\,\s\".*\s?(in|IN|In|iN)\s?\b(%numbers|%letters|%caps)\b
+#action (start) var sayer $1;var countdown $3;goto timer_start when ^(\w+).*\,\s\".*\s?(in|IN|In|iN)\s?\b(%numbers|%letters|%caps)\b
+action (start) var sayer $1;var countdown $3;goto timer_start when ^%leader.*\,\s\".*\s?(in|IN|In|iN)\s?\b(%numbers|%letters|%caps)\b
+
+action var leader You when ^(\w+) designates you as the new leader of the group\.
+action var leader $1 when ^You designate (\w+) as the new leader of the group\.
+action var leader $2 when ^(\w+) designates (?!you)(\w+) as the new leader of the group\.
+
 action var combat 1 when ^\[You\'re (.*) balanced (and|with)|range on you\!$|^You are engaged|melee with you\!$|you at (melee|pole) range\.$|is (facing|flanking|behind) you
 action var combat 0 when ^(balance|balanced)\]$|^There is nothing else to face\!
+
+if matchre ("%0","leader") then
+	{
+	eval leader replacere("%0","leader\s","")
+	goto start
+	}
+
+group_list:
+pause 0.01
+put group list
+matchre group_list ^\.\.\.wait|^Sorry\,|^You are still stunned|^You can't do that while|^You don't seem to be able to move
+matchre start ^Members of your group
+matchwait
 
 start:
 var combat 0
@@ -76,9 +95,9 @@ else if %auto_retreat = 1 then
 	{
 	if %if_combat_only = 1 then
 		{
-		if %combat = 1 then put %retreat_script
+		if %combat = 1 then put %retreat_script leader %leader
 		}
-	if %if_combat_only = 0 then put %retreat_script
+	if %if_combat_only = 0 then put %retreat_script leader %leader
 	}
 
 timer:
