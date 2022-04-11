@@ -37,7 +37,7 @@ var caps ONE|TWO|THREE|FOUR|FIVE|SIX|SEVEN|EIGHT|NINE|TEN|ELEVEN|TWELVE|THIRTEEN
 var letters one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty
 var numbers 1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20
 
-if %only_leader = 0 then action (start) var sayer $1;var countdown $3;goto timer_start when ^(\w+).*\,\s\".*\s?(in|IN|In|iN)\s?\b(%numbers|%letters|%caps)\b
+if %only_leader = 0 then action var sayer $1;var countdown $3;goto timer_start when ^(\w+).*\,\s\".*\s?(in|IN|In|iN)\s?\b(%numbers|%letters|%caps)\b
 
 action var leader $1 when ^\s\s(\w+)\s\(Leader\)\:\s
 action var leader You when ^(\w+) designates you as the new leader of the group\.

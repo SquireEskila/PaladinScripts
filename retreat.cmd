@@ -5,8 +5,6 @@ var health_limit 35
 ## retreat attempts between telling people you're dying
 var dying_limit 3
 
-debug 10
-
 action var leader $1 when ^\s\s(\w+)\s\(Leader\)\:\s
 action var status ready when ^You are already as far away as you can get\!|^You retreat from combat\.
 action var status pole when ^You retreat back to pole range\.|closes to pole weapon range on you\!$|(advancing on|facing|flanking|behind) you at pole weapon range\.$
