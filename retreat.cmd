@@ -5,6 +5,8 @@ var health_limit 35
 ## retreat attempts between telling people you're dying
 var dying_limit 3
 
+debug 10
+
 action var leader $1 when ^\s\s(\w+)\s\(Leader\)\:\s
 action var status ready when ^You are already as far away as you can get\!|^You retreat from combat\.
 action var status pole when ^You retreat back to pole range\.|closes to pole weapon range on you\!$|(advancing on|facing|flanking|behind) you at pole weapon range\.$
@@ -14,11 +16,10 @@ action var left 1 when ^%leader leaves you behind|^Your group moves on without y
 action var scarything $1;math help add 1 when ^You try to back away from (.*) but are unable to get away\!
 action goto stow_feet when at your feet\, and do not wish to leave it behind\.
 action goto move_success when ^You .*(north|east|south|west|up|down)\.$|^You follow %leader
-action if ("$roomid" != "%roomid") then goto move_success when ^\[(?!.*\.).*\]$
 
 # is this success? "^%leader\'s group climbed" as in "Salvitoriel's group climbed up a curving staircase.", but would that look the same if i was left behind?
 
-var roomid $roomid
+var startroomid $roomid
 var quick 0
 var help 0
 var left 0
@@ -48,9 +49,10 @@ matchre retreat_wait ^You are already as far away as you can get\!|^You retreat 
 matchwait 
 
 retreat_wait:
+if ("$roomid" != "%startroomid") then goto move_success
 if %quick != 0 then goto move
 if %left = 1 then goto move
-pause 0.5
+pause 0.2
 if %status = pole then goto retreat
 if %status = melee then goto retreat
 goto retreat_wait
@@ -65,12 +67,15 @@ move_success:
 put #parse YOU HAVE RETREATED!
 exit
 
+move_success_check:
+if ("$roomid" != "%startroomid") then goto move_success
+
 do_move:
 if %status != ready then goto retreat
 pause 0.01
 put %direction
 matchre do_move ^\.\.\.wait|^Sorry\,|^You are still stunned|^You can't do that while|^You don't seem to be able to move
-matchre move_success ^\[(?!.*\.).*\]$
+matchre move_success_check ^\[(?!.*\.).*\]$
 matchwait
 
 stand:

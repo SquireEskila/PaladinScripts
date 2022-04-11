@@ -54,7 +54,7 @@ put #window show %window
 
 var lastroomid $roomid
 var movelist canters|cartwheels|dances|drifts|ducks|glides|hobbles|hops|jogs|limps|lopes|lurches|lumbers|marches|meanders|moseys|pads|parades|patters|plods|prances|rambles|roves|runs|rushes|sashays|saunters|scampers|scrambles|shambles|shuffles|skips|slinks|slogs|slouches|sprints|staggers|stomps|stides|strolls|struts|stumbles|swaggers|traipses|tramps|treads|treks|troops|trots|trudges|walks|wanders|goes|climbs|swims|just went|went|wandered|moves|steps onto
-var directions north|northeast|east|southeast|south|southwest|west|northwest|up|down|in|out|widdershins|clockwise|through|some stairs|(into (?!position))|(over (?!to guard))
+var directions north|northeast|east|southeast|south|southwest|west|northwest|up|down|in|out|widdershins|clockwise|through|some stairs|(into (?!(position|a position)))|(over (?!to guard))
 
 action var lastroomid $roomid;goto room_check when ^\[(?!.*\.).*\]$
 
@@ -122,10 +122,13 @@ action var name You;if ("%%name_engage" != "*Melee*") then var %name_engage *Pol
 
 # disengage spell effects: innocence, intimidate, whole displacement, halo, 
 action var name 1$;var %name_engage Ready!;var update 1 when disengages from (%group)\.$
-action var name 1$;var %name_engage Ready!;var update 1 when ^(%group) is engulfed in a ripple of light and shadow, and vanishes, only to reappear some distance away\!
-action var name You;var %name_engage Ready!;var update 1 when ^A blinding flash of light engulfs you as a gut-wrenching sensation wracks your body, moving you further away\!
 action var name 1$;var %name_engage Ready!;var update 1 when ^The ring of light smashes into .* forcefully pushing it away from (%group)\.
 action var name You;var %name_engage Ready!;var update 1 when ^The ring of light smashes into .* forcefully pushing it from melee to missile range, away from you\.
+
+#action var name 1$;var %name_engage Ready!;var update 1 when ^(%group) is engulfed in a ripple of light and shadow, and vanishes, only to reappear some distance away\!
+#action var name You;var %name_engage Ready!;var update 1 when ^A blinding flash of light engulfs you as a gut-wrenching sensation wracks your body, moving you further away\!
+action var name 1$;var %name_engage Ready!;var %name_lost *LOST* Room [$roomid];var update 1 when ^(%group) is engulfed in a ripple of light and shadow, and vanishes, only to reappear some distance away\!
+action var name You;var %name_engage Ready!;goto group_lost when ^A blinding flash of light engulfs you as a gut-wrenching sensation wracks your body, moving you further away\!
 
 # engage spell effects: paeldryth's wrath
 action var name You;if ("%%name_engage" != "*Melee*") then var update 1;var %name_engage *Melee* when ^The winds slam into .* until it is right in front of you\!
@@ -146,7 +149,7 @@ action (group) var name $1;var %name_engage ???;var %name_lost;if matchre ("%gro
 
 # group subtracting
 action (group_disband) var name $1;math total subtract 1;eval group replacere("%group","%name\||\|%name","");var update 1 when ^You disband (%group)\.
-action var name $1;var %name_lost LOST! Room [%lastroomid];var update 1 when ^(\w+) is engaged and unable to follow you\.
+action var name $1;var %name_lost *LOST* Room [%lastroomid];var update 1 when ^(\w+) is engaged and unable to follow you\.
 action var name $1;math total subtract 1;var %name_engage ???;eval group replacere("%group","%name\||\|%name","");var update 1 when ^(%group) left the group\.
 action var name $1;math total subtract 1;eval group replacere("%group","%name\||\|%name","");var update 1 when ^%leader forces (\w+) out of (his|her) group\.
 action goto group_lost when ^%leader leaves you behind|^%leader (%movelist) (%directions)|^Your group moves on without you

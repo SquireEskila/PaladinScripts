@@ -8,6 +8,8 @@
 	var if_combat_only 0
 ## only auto_retreat if someone else is leader. 0 or 1
         var no_retreat_if_leader 0
+## only trigger the countdown if the group leader says it
+	var only_leader 1
 ## name of retreat script:
 	var retreat_script .retreat.cmd
 ## scripts to paused. 0 if no script needs to be paused. add more if needed!
@@ -35,9 +37,9 @@ var caps ONE|TWO|THREE|FOUR|FIVE|SIX|SEVEN|EIGHT|NINE|TEN|ELEVEN|TWELVE|THIRTEEN
 var letters one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty
 var numbers 1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20
 
-#action (start) var sayer $1;var countdown $3;goto timer_start when ^(\w+).*\,\s\".*\s?(in|IN|In|iN)\s?\b(%numbers|%letters|%caps)\b
-action (start) var sayer $1;var countdown $3;goto timer_start when ^%leader.*\,\s\".*\s?(in|IN|In|iN)\s?\b(%numbers|%letters|%caps)\b
+if %only_leader = 0 then action (start) var sayer $1;var countdown $3;goto timer_start when ^(\w+).*\,\s\".*\s?(in|IN|In|iN)\s?\b(%numbers|%letters|%caps)\b
 
+action var leader $1 when ^\s\s(\w+)\s\(Leader\)\:\s
 action var leader You when ^(\w+) designates you as the new leader of the group\.
 action var leader $1 when ^You designate (\w+) as the new leader of the group\.
 action var leader $2 when ^(\w+) designates (?!you)(\w+) as the new leader of the group\.
@@ -51,6 +53,8 @@ if matchre ("%0","leader") then
 	goto start
 	}
 
+if %only_leader = 0 then goto start
+
 group_list:
 pause 0.01
 put group list
@@ -60,7 +64,7 @@ matchwait
 
 start:
 var combat 0
-action (start) on
+if %only_leader = 1 then action var sayer %leader;var countdown $2;goto timer_start when ^%leader.*\,\s\".*\s?(in|IN|In|iN)\s?\b(%numbers|%letters|%caps)\b
 pause 1
 pause 6000
 goto start
