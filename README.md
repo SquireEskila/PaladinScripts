@@ -1,7 +1,11 @@
 # PaladinScripts
 All these scripts are for Genie and for use in the game DragonRealms
 
-for groups:
+FOR SELF:
+
+assess.cmd - a top-down visual representation of the ASSESS command that shows what enemies are around you and what number they are
+
+FOR GROUPS:
 
 Group health subs - copy these to the substitutes.cfg file
 
@@ -11,7 +15,7 @@ moving.cmd - sets up a window to show a countdown timer when someone says "in 5"
 
 retreat.cmd - auto retreats, will yell for help if you cant retreat or getting hurt, and can start with a direction to move that direction once retreated
 
-for paladins:
+FOR PALADINS:
 
 lead.cmd - automatically sets up LEAD whenever possible
 
