@@ -115,15 +115,14 @@ if "%BEHIND2" != "" then
 goto WAIT
 
 FACE:
-debug 10
 var NUMBER
 if matchre ("%FACE","(\d+)") then 
 	{
 	var NUMBER $0
+	eval NUMBER element("%NUMBERS","%NUMBER")
 	eval FACE replacere ("%FACE","\(\d+\)_","")
+	eval FACE replacere ("%FACE","_"," ")
 	}
-eval FACE replacere ("%FACE","_"," ")
-eval NUMBER element("%NUMBERS","%NUMBER")
 
 DO_FACE:
 pause 0.1
