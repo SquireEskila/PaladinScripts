@@ -1,20 +1,34 @@
 ##
 ## Set your preferred window name and colors here! Use ASSESS to update the window!
+## Set LINKS to 0 to disable links, 1 to enable, and DOUBLESPACE will doublespace them in mono font for easier clicking
 ##
 var COLOR whitesmoke
 var WINDOW Visual
+var LINKS 1
+var DOUBLESPACE 1
 
+#npcs
 action var FACING ($2) $1 when ^An? (.*) \((\d+)\: .*\) is facing you
 action if matchre ("%FLANK1","0") then var FLANK1 ($2) $1;if !matchre ("%FLANK1","0") then var FLANK2 ($2) $1 when ^An? (.*) \((\d+)\: (.*)\) is flanking you
 action if matchre ("%BEHIND1","0") then var BEHIND1 ($2) $1;if !matchre ("%BEHIND1","0") then var BEHIND2 ($2) $1 when ^An? (.*) \((\d+)\: (.*)\) is behind you
-action goto UPDATE when ^You assess your combat situation\.\.\.
 
+#players
+action var FACING $1 when ^(\w+) \(.*\) is facing you
+action if matchre ("%FLANK1","0") then var FLANK1 $1;if !matchre ("%FLANK1","0") then var FLANK2 $1 when ^(\w+) \(.*\) is flanking you
+action if matchre ("%BEHIND1","0") then var BEHIND1 $1;if !matchre ("%BEHIND1","0") then var BEHIND2 $1 when ^(\w+) \(.*\) is behind you
+
+var NUMBERS zero|first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|eleventh|twelfth|thirteenth|fourteenth|fifteenth|sixteenth|seventeenth|eighteenth|nineteenth|twentieth
+
+action goto UPDATE when ^You assess your combat situation\.\.\.
+action var FACE $1;goto FACE when ^FACE_(.*)
+
+START:
 put #window show %WINDOW
 put #clear %WINDOW
 put #echo >%WINDOW %COLOR mono " "
-put #echo >%WINDOW %COLOR mono "      ^"
-put #echo >%WINDOW %COLOR mono " <-- You -->"
-put #echo >%WINDOW %COLOR mono "      v"
+put #echo >%WINDOW %COLOR mono "    ^"
+put #echo >%WINDOW %COLOR mono " < You >"
+put #echo >%WINDOW %COLOR mono "    v"
 put #echo >%WINDOW %COLOR mono " "
 
 WAIT:
@@ -41,16 +55,88 @@ eval SPACETOP replacere ("%SPACETOP","."," ")
 put #clear %WINDOW
 if %BEHIND2 != 0 then goto UPDATE_TWOBEHIND
 put #echo >%WINDOW %COLOR mono "%SPACETOP %FACING"
-put #echo >%WINDOW %COLOR mono "%SPACESIDE     ^^^"
-put #echo >%WINDOW %COLOR mono "%FLANK1 <-- You --> %FLANK2"
-put #echo >%WINDOW %COLOR mono "%SPACESIDE      v"
+put #echo >%WINDOW %COLOR mono "%SPACESIDE   ^^^"
+put #echo >%WINDOW %COLOR mono "%FLANK1 < You > %FLANK2"
+put #echo >%WINDOW %COLOR mono "%SPACESIDE    v"
 put #echo >%WINDOW %COLOR mono "%SPACETOP %BEHIND1"
-goto WAIT
+goto LINKS
 
 UPDATE_TWOBEHIND:
 put #echo >%WINDOW %COLOR mono "%SPACETOP %FACING"
-put #echo >%WINDOW %COLOR mono "%SPACESIDE     ^^^"
-put #echo >%WINDOW %COLOR mono "%FLANK1 <-- You -->"
-put #echo >%WINDOW %COLOR mono "%SPACESIDE      v"
-put #echo >%WINDOW %COLOR mono "%SPACETOP %BEHIND1 %BEHIND2"
+put #echo >%WINDOW %COLOR mono "%SPACESIDE   ^^^"
+put #echo >%WINDOW %COLOR mono "%FLANK1 < You >"
+put #echo >%WINDOW %COLOR mono "%SPACESIDE    v"
+put #echo >%WINDOW %COLOR mono "%SPACETOP %BEHIND1"
+put #echo >%WINDOW %COLOR mono "%SPACETOP %BEHIND2"
+
+LINKS:
+if %LINKS = 0 then goto WAIT
+put #echo >%WINDOW
+if "%FLANK1" != "" then
+	{
+	eval FACEFLANK1 replacere("%FLANK1","\s","_")
+	if %DOUBLESPACED = 1 then 
+		{
+		put #echo >%WINDOW mono "Flanking: "
+		put #link >%WINDOW Face_%FACEFLANK1 #parse FACE_%FACEFLANK1
+		}
+	else put #link >%WINDOW Flanking:_Face_%FACEFLANK1 #parse FACE_%FACEFLANK1
+	}
+if "%FLANK2" != "" then
+	{
+	eval FACEFLANK2 replacere("%FLANK2","\s","_")
+	if %DOUBLESPACED = 1 then 
+		{
+		put #echo >%WINDOW mono "Flanking: "
+		put #link >%WINDOW Face_%FACEFLANK2 #parse FACE_%FACEFLANK2
+		}
+	else put #link >%WINDOW Flanking:_Face_%FACEFLANK2 #parse FACE_%FACEFLANK2
+	}
+if "%BEHIND1" != "" then
+	{
+	eval FACEBEHIND1 replacere("%BEHIND1","\s","_")
+	if %DOUBLESPACED = 1 then 
+		{
+		put #echo >%WINDOW mono "Behind: "
+		put #link >%WINDOW Face_%FACEBEHIND1 #parse FACE_%FACEBEHIND1
+		}
+	else put #link >%WINDOW Behind:_Face_%FACEBEHIND1 #parse FACE_%FACEBEHIND1
+	}
+if "%BEHIND2" != "" then
+	{
+	eval FACEBEHIND2 replacere("%BEHIND2","\s","_")
+	if %DOUBLESPACED = 1 then 
+		{
+		put #echo >%WINDOW mono "Behind: "
+		put #link >%WINDOW Face_%FACEBEHIND2 #parse FACE_%FACEBEHIND2
+		}
+	else put #link >%WINDOW Behind:_Face_%FACEBEHIND2 #parse FACE_%FACEBEHIND1
+	}
 goto WAIT
+
+FACE:
+debug 10
+var NUMBER
+if matchre ("%FACE","(\d+)") then 
+	{
+	var NUMBER $0
+	eval FACE replacere ("%FACE","\(\d+\)_","")
+	}
+eval FACE replacere ("%FACE","_"," ")
+eval NUMBER element("%NUMBERS","%NUMBER")
+
+DO_FACE:
+pause 0.1
+put face %NUMBER %FACE
+matchre DO_FACE ^\.\.\.wait|^You are still stunned|^Sorry\,|^You can't do that while entangled|^You don't seem to be able to move
+matchre WAIT ^You turn to face|^You are already facing|^What\'s the point in facing a dead|^There is nothing else to face\!|^Face what?
+matchre RETREAT ^You are too closely engaged and will have to retreat first\.$
+matchwait 2
+goto WAIT
+	
+RETREAT:
+pause 0.1
+put retreat
+matchre RETREAT\.\.\.wait|^You are still stunned|^Sorry\,|^You can't do that while entangled|^You don't seem to be able to move|^You retreat back to pole range.|^You try to back away
+matchre DO_FACE ^You retreat from combat\.|^You are already as far away as you can get\!
+matchwait
