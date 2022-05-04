@@ -1,11 +1,18 @@
-##
-## Set your preferred window name and colors here! Use ASSESS to update the window!
-## Set LINKS to 0 to disable links, 1 to enable, and DOUBLESPACE will doublespace them in mono font for easier clicking
-##
-var COLOR whitesmoke
-var WINDOW Visual
-var LINKS 1
-var DOUBLESPACE 1
+
+## Window to output to
+   var WINDOW Assess
+## Clear the window before sending updated information: 1 for yes, 0 for no (Set to 0 if sending to append to Assess window) 
+   var CLEAR 0
+## Color of the non-link text and arrows
+   var COLOR whitesmoke
+## Show list of clickable links to face things flanking or behind you: 1 for yes, 0 for no
+   var LINKS 1
+## Doublespace the link list in mono font ("Facing"/"Behind" will not be links and will show as colored), or single space: 1 for yes, 0 for no
+   var DOUBLESPACE 1
+## See combat overhead view of enemies engaged to you: 1 for yes, 0 for no
+   var OVERHEADVIEW 1
+## Speed to update after the text "You assess your combat situation..." shows. Must be higher than 0. Too small and the variables cannot populate before text is printed to the window!
+   var UPDATESPEED 0.1
 
 #npcs
 action var FACING ($2) $1 when ^An? (.*) \((\d+)\: .*\) is facing you
@@ -19,17 +26,17 @@ action if matchre ("%BEHIND1","0") then var BEHIND1 $1;if !matchre ("%BEHIND1","
 
 var NUMBERS zero|first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|eleventh|twelfth|thirteenth|fourteenth|fifteenth|sixteenth|seventeenth|eighteenth|nineteenth|twentieth
 
-action goto UPDATE when ^You assess your combat situation\.\.\.
-action var FACE $1;goto FACE when ^FACE_(.*)
+action instant goto UPDATE when ^You assess your combat situation\.\.\.$
+action var FACE $1;goto FACE when when ^FACE_(.*)
 
 START:
 put #window show %WINDOW
-put #clear %WINDOW
-put #echo >%WINDOW %COLOR mono " "
-put #echo >%WINDOW %COLOR mono "    ^"
-put #echo >%WINDOW %COLOR mono " < You >"
-put #echo >%WINDOW %COLOR mono "    v"
-put #echo >%WINDOW %COLOR mono " "
+if %CLEAR = 1 then put #clear %WINDOW
+put #echo >%WINDOW %COLOR mono "   Script Loaded!"
+if %OVERHEADVIEW = 1 then put #echo >%WINDOW %COLOR mono "         ^"
+if %OVERHEADVIEW = 1 then put #echo >%WINDOW %COLOR mono "      < You >"
+if %OVERHEADVIEW = 1 then put #echo >%WINDOW %COLOR mono "         v"
+put #echo >%WINDOW %COLOR mono "Waiting for ASSESS..."
 
 WAIT:
 var FACING 0
@@ -41,18 +48,26 @@ pause 9999
 goto WAIT
 
 UPDATE:
-pause 0.5
+delay %UPDATESPEED
 if "%FLANK1" = "%FLANK2" then var FLANK2
 if "%BEHIND1" = "%BEHIND2" then var BEHIND2
 if "%BEHIND1" = "0" then var BEHIND1
 if "%FACING" = "0" then var FACING
 if "%FLANK2" = "0" then var FLANK2
-if "%FLANK1" = "0" then var FLANK1
 eval SPACETOP replacere ("%FLANK1","\(\d+\)\s","")
-eval SPACESIDE replacere ("%FLANK1","."," ")
 eval SPACETOP replacere ("%SPACETOP","."," ")
+eval SPACESIDE replacere ("%FLANK1","."," ")
+if "%FLANK1" = "0" then 
+	{
+	var FLANK1 0000
+	eval SPACESIDE replacere ("%FLANK1","."," ")
+	eval FLANK1 replacere ("%FLANK1","."," ")
+	var SPACETOP
+	}
 
-put #clear %WINDOW
+if %CLEAR = 1 then put #clear %WINDOW
+if %OVERHEADVIEW = 0 then goto LINKS
+if %CLEAR = 0 then put #echo >%WINDOW
 if %BEHIND2 != 0 then goto UPDATE_TWOBEHIND
 put #echo >%WINDOW %COLOR mono "%SPACETOP %FACING"
 put #echo >%WINDOW %COLOR mono "%SPACESIDE   ^^^"
@@ -72,6 +87,8 @@ put #echo >%WINDOW %COLOR mono "%SPACETOP %BEHIND2"
 LINKS:
 if %LINKS = 0 then goto WAIT
 put #echo >%WINDOW
+if %DOUBLESPACE = 0 then put #echo >%WINDOW
+if "%FLANK1" = "    " then var FLANK1
 if "%FLANK1" != "" then
 	{
 	eval FACEFLANK1 replacere("%FLANK1","\s","_")
