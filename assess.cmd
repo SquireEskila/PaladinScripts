@@ -77,7 +77,7 @@ if "%FLANK1" != "" then
 	eval FACEFLANK1 replacere("%FLANK1","\s","_")
 	if %DOUBLESPACED = 1 then 
 		{
-		put #echo >%WINDOW mono "Flanking: "
+		put #echo >%WINDOW %COLOR mono "Flanking: "
 		put #link >%WINDOW Face_%FACEFLANK1 #parse FACE_%FACEFLANK1
 		}
 	else put #link >%WINDOW Flanking:_Face_%FACEFLANK1 #parse FACE_%FACEFLANK1
@@ -87,7 +87,7 @@ if "%FLANK2" != "" then
 	eval FACEFLANK2 replacere("%FLANK2","\s","_")
 	if %DOUBLESPACED = 1 then 
 		{
-		put #echo >%WINDOW mono "Flanking: "
+		put #echo >%WINDOW %COLOR mono "Flanking: "
 		put #link >%WINDOW Face_%FACEFLANK2 #parse FACE_%FACEFLANK2
 		}
 	else put #link >%WINDOW Flanking:_Face_%FACEFLANK2 #parse FACE_%FACEFLANK2
@@ -97,7 +97,7 @@ if "%BEHIND1" != "" then
 	eval FACEBEHIND1 replacere("%BEHIND1","\s","_")
 	if %DOUBLESPACED = 1 then 
 		{
-		put #echo >%WINDOW mono "Behind: "
+		put #echo >%WINDOW %COLOR mono "Behind: "
 		put #link >%WINDOW Face_%FACEBEHIND1 #parse FACE_%FACEBEHIND1
 		}
 	else put #link >%WINDOW Behind:_Face_%FACEBEHIND1 #parse FACE_%FACEBEHIND1
@@ -107,7 +107,7 @@ if "%BEHIND2" != "" then
 	eval FACEBEHIND2 replacere("%BEHIND2","\s","_")
 	if %DOUBLESPACED = 1 then 
 		{
-		put #echo >%WINDOW mono "Behind: "
+		put #echo >%WINDOW %COLOR mono "Behind: "
 		put #link >%WINDOW Face_%FACEBEHIND2 #parse FACE_%FACEBEHIND2
 		}
 	else put #link >%WINDOW Behind:_Face_%FACEBEHIND2 #parse FACE_%FACEBEHIND1
